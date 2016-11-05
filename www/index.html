@@ -2,7 +2,7 @@
 <html>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <head>
-	<title>Dachshund&reg;</title>
+	<title>DoDoS&reg;</title>
 	<link rel="icon" type="image/png" href="favicon.png" sizes="32x32"/>
 	<style>
 	@font-face {
@@ -17,17 +17,25 @@
 	}
 	body {
 		font-family: Roboto;
-		background-image: url("http://i.imgur.com/GBvXLvM.png");
-		background-size: 100% auto;
-		background-position: 0% 0%;
-		background-attachment: fixed;
+		background-image: url("http://i.imgur.com/EcEyjBM.png");
+		background-size: 10%;
+		text-align: center;
 	}
 	h1 {
+		font-size: 9vw;
 		margin-top: -1%;
-		font-size: 400%;
+    	-webkit-transform: rotate(5deg);
+		-moz-transform: rotate(5deg);
+		-ms-transform: rotate(5deg);
+		-o-transform: rotate(5deg);
+		transform: rotate(5deg);
 	}
 	h2 {
 		margin-top: -1%;
+	}
+	h5 {
+		font-size: 2vw;
+		margin-top: -7%;
 	}
 	#line {
 		margin-top: 20px;
@@ -44,7 +52,8 @@
 	<script src="node_modules/angular-chart.js/dist/angular-chart.min.js"></script>
 </head>
 <body ng-app="dachshund">
-<h1>Dachshund.</h1>
+<h1>DoDoS.</h1>
+<h5>Did you mean: <a href="https://www.google.com/search?q=ddos" target="_new">DDoS</a></h6>
 <section ng-controller="MainController">
 	<div ng-repeat="device in devices" class="device-info">
  		<h2>{{ device.ID }}</h2>
