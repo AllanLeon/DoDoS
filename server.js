@@ -13,21 +13,10 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 // Callback function when a HTTP POST method is requested, in the path '/iot-device'
 // Converts iot-device received data to a format understood by the web client
-app.post("/iot-device", function(req, res) {
+app.post("/", function(req, res) {
 	console.log("Receiving device data...")
 	console.log(req.body);
-	/*var iot_id = req.body.id;
-	var data = [];
-	i = 0;
-	for (var key in req.body.data) {
-		data[i] = {
-			x: [req.body.datetime],
-			y: [req.body.data[key]],
-			name: key
-		}
-		i++;
-	}*/
-
+	
 	// socket broadcast message to all the connected clients
 	// with the received device data
 	io.emit("device data", {
@@ -36,12 +25,13 @@ app.post("/iot-device", function(req, res) {
 		"data": req.body.data
 	});
 
+	updateAttackerIPAndPort(req.body.id, req.connection.remoteAddress, req.connection.remotePort);
 	// set device message sending time to default, if it's a new device
-	updateDeviceTime(req.body.id);
+	updateAttackerTime(req.body.id);
 
 	// response sent to device with the time to send a message in milliseconds
-	res.send(iotDevicesTime[req.body.id] + '');
-})
+	res.send(attackersData[req.body.id].time + '');
+});
 
 // Callback function when a 'connection' socket message is received
 // When a client connection is established
@@ -51,19 +41,27 @@ io.on('connection', function(socket){
   // Callback function when a 'update time' socket message is received
   // Updates a given device with a given time
   socket.on('update time', function(deviceTime) {
-	updateDeviceTime(deviceTime.ID, deviceTime.time);
+	updateAttackerTime(deviceTime.ID, deviceTime.time);
   });
 });
 
-var iotDevicesTime = {}; // JSON containing the time to send a message for all devices
+var attackersData = {}; // JSON containing the data of the attackers, time, ip address and port
 
 // Updates the time of a given device
-function updateDeviceTime(id, time) {
+function updateAttackerTime(id, time) {
 	if (time) { // time is passed as a parameter
-		iotDevicesTime[id] = time;
-	} else if (!iotDevicesTime[id]) { // time isn't passed as a parameter
-		iotDevicesTime[id] = 1000; // set device time to default (1000 milliseconds)
+		attackersData[id].time = time;
+	} else if (!attackersData[id].time) { // time isn't passed as a parameter
+		attackersData[id].time = 1000; // set device time to default (1000 milliseconds)
 	}
+}
+
+function updateAttackerIPAndPort(id, ip, port) {
+	if (!attackersData[id]) {
+		attackersData[id] = {};
+	}
+	attackersData[id].ip = ip;
+	attackersData[id].port = port;
 }
 
 //Starts the server, it listens on port 8080
