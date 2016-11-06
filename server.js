@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 // Callback function when a HTTP POST method is requested, in the path '/iot-device'
 // Converts iot-device received data to a format understood by the web client
-app.post("/", function(req, res) {
+app.post("/attacker", function(req, res) {
 	console.log("Receiving device data...")
 	console.log(req.body);
 	
