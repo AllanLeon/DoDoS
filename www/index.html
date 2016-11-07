@@ -9,8 +9,6 @@
     	font-family: 'Roboto';
     	src: url('Roboto-Regular-webfont.eot');
     	src: url('Roboto-Regular-webfont.eot?#iefix') format('embedded-opentype'),
-         	url('Roboto-Regular-webfont.woff') format('woff'),
-         	url('Roboto-Regular-webfont.ttf') format('truetype'),
          	url('Roboto-Regular-webfont.svg#RobotoRegular') format('svg');
 	    font-weight: normal;
 	    font-style: normal;
@@ -63,6 +61,19 @@
  		<button ng-click="sendTime(device.ID, device.timeToWait)">Ok</button>
  		<div><canvas id="line" class="chart chart-line" chart-data="device.data" chart-labels="device.labels" chart-series="device.series" chart-dataset-override="device.datasetOverride" chart-options="chartOptions"></canvas></div>
  	</div>
+</section>
+<section ng-controller="AttackAddressesCtrl">
+	<form ng-submit="add()">
+	    <input type="text" ng-model="addrInput" size="50" placeholder="xxx.xxx.xxx.xxx:yyyy">
+	    <input type="submit" value="Add New">
+	</form>
+	<br>
+	<div ng-repeat="elem in addrList">
+	    <input type="checkbox" ng-model="elem.check"> <span ng-bind="elem.addr"></span>
+	</div>
+
+	<p><button ng-click="remove()">Remove marked</button></p>
+	<p><button>ATTACK!</button></p>
 </section>
 <script type="text/javascript" src="app.js"></script>
 </body>

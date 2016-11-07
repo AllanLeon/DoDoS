@@ -123,6 +123,24 @@ app.controller('MainController', function($scope, socket) {
 	}
 });
 
+app.controller('AttackAddressesCtrl', function($scope) {
+    $scope.addrList = [];
+
+    $scope.add = function() {
+        $scope.addrList.push({addr:$scope.addrInput, check:false});
+        $scope.addrInput = "";
+    };
+
+    $scope.remove = function() {
+        var oldList = $scope.addrList;
+        $scope.addrList = [];
+        angular.forEach(oldList, function(elem) {
+            if (!elem.check)
+            	$scope.addrList.push(elem);
+        });
+    };
+});
+
 // factory used for socket services
 // implements 'on' and 'emit' methods, so them can be used inside a controller
 app.factory('socket', ['$rootScope', function ($rootScope) {
