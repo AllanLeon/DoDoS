@@ -64,11 +64,15 @@ function sendPortToMaster() {
 
 function sendLeaderToMaster(leader) {
 	request.post({
-	  headers: {"content-type" : "text/plain"},
+	  headers: {"content-type" : "application/json"},
 	  url:     serverAddress + "/leader",
-	  body:    leader
+	  body:    JSON.stringify({"leader": leader})
 	}, function(error, res, body){
-	  console.log("I'm the leader");
+	  if (!(body === "LEADER")) {
+	  	console.log("I'm the leader");
+	  	
+	  }
+	  
 	  //TODO: Select victim and lead attack
 	  
 	});	

