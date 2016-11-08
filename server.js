@@ -65,10 +65,10 @@ app.post("/attacker", function(req, res) {
 	// set device message sending time to default, if it's a new device
 	//updateAttackerTime(id);
 	res.send(attackersData);
-	connectedAttackers++;
+	/*connectedAttackers++;
 	if (connectedAttackers === 3) {
 		setTimeout(startElection, 4000);
-	}
+	}*/
 	
 	/*request.post({
 	  headers: {"content-type" : "application/json"},
@@ -116,6 +116,9 @@ io.on('connection', function(socket){
 	// When recieving the addresses coming from the Web Client
 	socket.on('attack', function(data){
   		addresses2bAttacked = data.addresses;
+  		console.log("-------------------");
+  		console.log(addresses2bAttacked);
+  		startElection();
 	});
 });
 

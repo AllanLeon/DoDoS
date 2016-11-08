@@ -3,12 +3,14 @@ var app = express();
 var request = require("request");
 app.use(express.static(__dirname + '/'));
 
-app.post("/", function(req, res) {
+app.post("/attacker", function(req, res) {
 	console.log("HELP!");
+	res.sendStatus(200);
 });
 
-app.get("/", function(req, res) {
+app.get("/attacker", function(req, res) {
 	console.log("HELP!");
+	res.sendStatus(200);
 });
 
 //Starts this victim, default port is 3000

