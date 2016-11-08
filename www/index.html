@@ -44,6 +44,9 @@
 		max-width: 800px;
 		margin-bottom: 50px;
 	}
+	#ipList {
+		float: right;
+	}
 	</style>
 	<script type="text/javascript" src="lib/angular.min.js"></script>
 	<script type="text/javascript" src="lib/socket.io.js"></script>
@@ -53,10 +56,10 @@
 <body ng-app="dachshund">
 <h1>DoDoS.</h1>
 <h5>Did you mean: <a href="https://www.google.com/search?q=ddos" target="_new">DDoS</a></h6>
-<section ng-controller="AttackAddressesCtrl">
+<section id="ipList" ng-controller="AttackAddressesCtrl">
 	<form ng-submit="add()">
-	    <input type="text" pattern="([0-9]{1,3}).([0-9]{1,3}).([0-9]{1,3}).([0-9]{1,3}):([0-9]{1,4})" title="IPaddress:port (xxx.xxx.xxx.xxx:yyyy)" ng-model="addrInput" size="50" placeholder="xxx.xxx.xxx.xxx:yyyy">
-	    <input type="submit" value="Add New">
+	    <input type="text" pattern="([0-9]{1,3}).([0-9]{1,3}).([0-9]{1,3}).([0-9]{1,3}):([0-9]{1,4})" title="IPaddress:port (xxx.xxx.xxx.xxx:yyyy)" ng-model="addrInput" size="20" placeholder="xxx.xxx.xxx.xxx:yyyy">
+	    <input type="submit" value="Add">
 	</form>
 	<br>
 	<div ng-repeat="elem in addrList">
@@ -64,7 +67,7 @@
 	</div>
 
 	<p><button ng-click="remove()">Remove marked</button></p>
-	<p><button>ATTACK!</button></p>
+	<p><button ng-click="attack()">ATTACK!</button></p>
 </section>
 <section ng-controller="MainController">
 	<div ng-repeat="device in devices" class="device-info">
