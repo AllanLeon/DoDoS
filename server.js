@@ -82,6 +82,12 @@ io.on('connection', function(socket){
   /*socket.on('update time', function(deviceTime) {
 	updateAttackerTime(deviceTime.ID, deviceTime.time);
   });*/
+
+  	// Callback function when a 'connection' socket message is received
+	// When a client connection is established
+	socket.on('attack', function(data){
+  		console.log(data);
+	});
 });
 
 var attackersData = {}; // JSON containing the data of the attackers, time, ip address and port

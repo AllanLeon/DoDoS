@@ -123,8 +123,10 @@ app.controller('MainController', function($scope, socket) {
 	}
 });
 
-app.controller('AttackAddressesCtrl', function($scope) {
+app.controller('AttackAddressesCtrl', function($scope, socket) {
     $scope.addrList = [];
+   	//var addresses = [];
+   	//var ports = [];
 
     $scope.add = function() {
         $scope.addrList.push({addr:$scope.addrInput, check:false});
@@ -138,6 +140,27 @@ app.controller('AttackAddressesCtrl', function($scope) {
             if (!elem.check)
             	$scope.addrList.push(elem);
         });
+    };
+
+/*    function tokenize(list) {
+        angular.forEach(list, function(elem) {
+			var splitElem = elem.addr.split(":");
+			addresses.push(splitElem[0]);
+			ports.push(splitElem[1]);
+        });
+    };
+*/
+    $scope.attack = function() {
+		//tokenize($scope.addrList);
+		var addresses = [];
+        angular.forEach($scope.addrList, function(elem) {
+			addresses.push(elem.addr);
+        });
+
+    	socket.emit('attack', {
+			'addresses': addresses
+		});
+		console.log("Looks like its sent, bud");
     };
 });
 
