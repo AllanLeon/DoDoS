@@ -1,6 +1,7 @@
 // require necessary dependencies for http transactions
 var express = require("express");
 var app = express();
+var request = require("request");
 var http = require('http').Server(app);
 var io = require("socket.io")(http);
 var bodyParser = require('body-parser');
@@ -13,24 +14,62 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 // Callback function when a HTTP POST method is requested, in the path '/iot-device'
 // Converts iot-device received data to a format understood by the web client
-app.post("/attacker", function(req, res) {
-	console.log("Receiving device data...")
+app.put("/attacker", function(req, res) {
+	console.log("Receiving attacker data...");
 	console.log(req.body);
+
+	var id = req.body.id;
 	
 	// socket broadcast message to all the connected clients
 	// with the received device data
 	io.emit("device data", {
-		"ID": req.body.id,
+		"ID": id,
 		"datetime": req.body.datetime,
 		"data": req.body.data
 	});
 
-	updateAttackerIPAndPort(req.body.id, req.connection.remoteAddress, req.connection.remotePort);
+	//updateAttackerIPAndPort(req.body.id, ip, port);
 	// set device message sending time to default, if it's a new device
-	updateAttackerTime(req.body.id);
+	//updateAttackerTime(req.body.id);
+	//console.log(req);
 
+	res.send(attackersData);
 	// response sent to device with the time to send a message in milliseconds
-	res.send(attackersData[req.body.id].time + '');
+	//res.send(attackersData);
+
+	/*request.post({
+	  headers: {"content-type" : "application/json"},
+	  url:     "http://" + attackersData[id].ip + ":" + attackersData[id].port + "/attackers",
+	  body:    JSON.stringify(attackersData)
+	}, function(error, res, body){
+	  console.log(error);
+	});*/
+
+	//console.log(attackersData[id].ip + ":" + attackersData[id].port + "/attackers");
+});
+
+app.post("/attacker", function(req, res) {
+	console.log("Receiving attacker port...");
+	console.log(req.body);
+
+	var id = req.body.id;
+	var ip = /.*:(([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3}))/g.exec(req.connection.remoteAddress)[1];
+	var port = req.body.port
+
+	updateAttackerIPAndPort(id, ip, port);
+	// set device message sending time to default, if it's a new device
+	//updateAttackerTime(id);
+	res.send(attackersData);
+	
+	/*request.post({
+	  headers: {"content-type" : "application/json"},
+	  url:     "http://" + attackersData[id].ip + ":" + attackersData[id].port + "/attackers",
+	  body:    JSON.stringify(attackersData)
+	}, function(error, res, body){
+	  console.log(error);
+	});*/
+
+	console.log(attackersData);
 });
 
 // Callback function when a 'connection' socket message is received
@@ -40,21 +79,21 @@ io.on('connection', function(socket){
   
   // Callback function when a 'update time' socket message is received
   // Updates a given device with a given time
-  socket.on('update time', function(deviceTime) {
+  /*socket.on('update time', function(deviceTime) {
 	updateAttackerTime(deviceTime.ID, deviceTime.time);
-  });
+  });*/
 });
 
 var attackersData = {}; // JSON containing the data of the attackers, time, ip address and port
 
 // Updates the time of a given device
-function updateAttackerTime(id, time) {
+/*function updateAttackerTime(id, time) {
 	if (time) { // time is passed as a parameter
 		attackersData[id].time = time;
 	} else if (!attackersData[id].time) { // time isn't passed as a parameter
 		attackersData[id].time = 1000; // set device time to default (1000 milliseconds)
 	}
-}
+}*/
 
 function updateAttackerIPAndPort(id, ip, port) {
 	if (!attackersData[id]) {
