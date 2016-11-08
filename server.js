@@ -12,6 +12,8 @@ app.use('/node_modules', express.static(__dirname + '/node_modules')); // path u
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
+var connectedAttackers = 0;
+
 // Callback function when a HTTP POST method is requested, in the path '/iot-device'
 // Converts iot-device received data to a format understood by the web client
 app.put("/attacker", function(req, res) {
@@ -60,6 +62,10 @@ app.post("/attacker", function(req, res) {
 	// set device message sending time to default, if it's a new device
 	//updateAttackerTime(id);
 	res.send(attackersData);
+	connectedAttackers++;
+	if (connectedAttackers === 3) {
+		setTimeout(startElection, 4000);
+	}
 	
 	/*request.post({
 	  headers: {"content-type" : "application/json"},
@@ -94,6 +100,18 @@ var attackersData = {}; // JSON containing the data of the attackers, time, ip a
 		attackersData[id].time = 1000; // set device time to default (1000 milliseconds)
 	}
 }*/
+
+function startElection() {
+	for (var key in attackersData) {
+		request.post({
+		  headers: {"content-type" : "text/plain"},
+		  url:     "http://" + attackersData[key].ip + ":" + attackersData[key].port + "/election",
+		  body:    ""
+		}, function(error, res, body){
+		  console.log(error);
+		});
+	}
+}
 
 function updateAttackerIPAndPort(id, ip, port) {
 	if (!attackersData[id]) {

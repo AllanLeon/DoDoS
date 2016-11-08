@@ -8,7 +8,10 @@ app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 var serverAddress = "http://127.0.0.1:8080";
-var id = "My IoT";
+var id = process.argv.slice(2);//"My IoT";
+var leader = true;
+var receivedAll = 0;
+var electionSent = 0;
 
 function randomizer(min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -42,26 +45,92 @@ function sendSensorData() {
 	  url:     serverAddress + "/attacker",
 	  body:    buildJSONbody()
 	}, function(error, res, body){
-	  console.log(body);
-	});	
+	  //console.log(body);
+	  attackersData = JSON.parse(body);
+	});
+	//console.log(attackersData);
 }
 
-function sendPort() {
+function sendPortToMaster() {
 	request.post({
 	  headers: {"content-type" : "application/json"},
 	  url:     serverAddress + "/attacker",
 	  body:    JSON.stringify({"port": port, "id": id})
 	}, function(error, res, body){
-	  console.log(body);
+	  //console.log(body);
 	  setInterval(sendSensorData, 1000);
 	});	
 }
 
-app.post("/attackers", function(req, res) {
+function sendLeaderToMaster(leader) {
+	request.post({
+	  headers: {"content-type" : "text/plain"},
+	  url:     serverAddress + "/leader",
+	  body:    leader
+	}, function(error, res, body){
+	  console.log("I'm the leader");
+	  //TODO: Select victim and lead attack
+	  
+	});	
+}
+
+function sendElectionTo(msg, ip, port) {
+	request.put({
+	  headers: {"content-type" : "application/json"},
+	  url:     "http://" + ip + ":" + port + "/election",
+	  body:    JSON.stringify(msg)
+	}, function(error, res, body){
+	  	console.log(body);
+	  	if (body === "OK") {
+	  		leader = false;
+	  	}
+	  	receivedAll++;
+	  	if (receivedAll === electionSent && leader) {
+	  		console.log("Received all");
+	  		sendLeaderToMaster(id);
+	  	}
+	});
+}
+
+function sendElectionToAll() {
+	receivedAll = 0;
+	electionSent = 0;
+	leader = true;
+	console.log("SEARCHING");
+	console.log(attackersData);
+	for (var key in attackersData) {
+	  	if (key > id) {
+			electionSent++;
+		}
+	}
+	if (electionSent === 0) {
+		sendLeaderToMaster(id);
+	} else {
+		for (var key in attackersData) {
+			if (key > id) {
+				console.log(key);
+				sendElectionTo({"id": id}, attackersData[key].ip, attackersData[key].port);
+			}
+		}
+	}
+}
+
+/*app.post("/attackers", function(req, res) {
 	console.log("receiving attackers data...");
 	attackersData = req.body;
-	console.log(attackersData);
+	//console.log(attackersData);
 	res.sendStatus(200);
+});*/
+
+app.put("/election", function(req, res) {
+	console.log("receiving election...");
+	res.send("OK");
+	sendElectionToAll();
+});
+
+app.post("/election", function(req, res) {
+	console.log("starting election...");
+	sendElectionToAll();
 });
 
 
@@ -72,7 +141,7 @@ var attackersData = {};
 function connect(p) {
 	app.listen(p, function() {
 		console.log(p);
-		sendPort();
+		sendPortToMaster();
 	}).on('error', function(err) {
 		port++;
 		console.log("Unavailable port. Increasing by 1, now trying on port: " + port);
