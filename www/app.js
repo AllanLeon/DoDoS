@@ -3,7 +3,6 @@ var app = angular.module('dachshund', ["chart.js"]); // module declaration
 // controller of the devices and sensors' chart
 app.controller('MainController', function($scope, socket) {
 	$scope.devices = []; // array of all iot-devices
-	$scope.sendTime = sendTime; // function to send time to device
 
   	// default options for a chart.js
   	$scope.chartOptions = {
