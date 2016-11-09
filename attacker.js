@@ -113,7 +113,7 @@ function sendLeaderTo(leader, address) {
 	  url:     address + "/coordinator",
 	  body:    JSON.stringify({"leader": leader})
 	}, function(error, res, body){
-	  if (!(body === "OK")) { // avoid overflow of attacking messages
+	  if (!(body === "OK") && !(body === undefined)) { // avoid overflow of attacking messages
 	  	console.log("I'm the leader");
 	  	// choose a random victim and start the attack
 	  	sendAttackRequestToAll(chooseRandomVictim(JSON.parse(body)));
