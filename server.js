@@ -116,9 +116,11 @@ io.on('connection', function(socket){
 	// When recieving the addresses coming from the Web Client
 	socket.on('attack', function(data){
   		addresses2bAttacked = data.addresses;
-  		console.log("-------------------");
-  		console.log(addresses2bAttacked);
   		startElection();
+	});
+
+	socket.on('stop', function(data){
+  		stopAttack();
 	});
 });
 
@@ -139,6 +141,18 @@ function startElection() {
 		request.post({
 		  headers: {"content-type" : "text/plain"},
 		  url:     "http://" + attackersData[key].ip + ":" + attackersData[key].port + "/election",
+		  body:    ""
+		}, function(error, res, body){
+		  console.log(error);
+		});
+	}
+}
+
+function stopAttack() {
+	for (var key in attackersData) {
+		request.delete({
+		  headers: {"content-type" : "text/plain"},
+		  url:     "http://" + attackersData[key].ip + ":" + attackersData[key].port + "/victim",
 		  body:    ""
 		}, function(error, res, body){
 		  console.log(error);

