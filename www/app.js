@@ -1,6 +1,6 @@
 var app = angular.module('dachshund', ["chart.js"]); // module declaration
 
-// controller of the whole webpage
+// controller of the devices and sensors' chart
 app.controller('MainController', function($scope, socket) {
 	$scope.devices = []; // array of all iot-devices
 	$scope.sendTime = sendTime; // function to send time to device
@@ -32,14 +32,6 @@ app.controller('MainController', function($scope, socket) {
         type: 'line',
         fill: false
   	};
-
-  	// sends a socket message to update the time to send message time of a device
-	function sendTime(id, time) {
-		socket.emit('update time', {
-			'ID': id,
-			'time': time
-		});
-	}
 
   	// callback function when a socket 'device data' message is received
   	// updates the respective device with the received data
@@ -123,16 +115,19 @@ app.controller('MainController', function($scope, socket) {
 	}
 });
 
+// Controller of addresses list to attack
 app.controller('AttackAddressesCtrl', function($scope, socket) {
-    $scope.addrList = [];
+    $scope.addrList = []; // ip address + port list
    	//var addresses = [];
    	//var ports = [];
 
+   	// adds an address to the list
     $scope.add = function() {
         $scope.addrList.push({addr:$scope.addrInput, check:false});
         $scope.addrInput = "";
     };
 
+    // removes selected addresses from the list
     $scope.remove = function() {
         var oldList = $scope.addrList;
         $scope.addrList = [];
@@ -150,6 +145,8 @@ app.controller('AttackAddressesCtrl', function($scope, socket) {
         });
     };
 */
+	
+	// sends the addresses list to the server and starts the attack
     $scope.attack = function() {
 		//tokenize($scope.addrList);
 		var addresses = [];
@@ -157,12 +154,14 @@ app.controller('AttackAddressesCtrl', function($scope, socket) {
 			addresses.push(elem.addr);
         });
 
+        // send socket 'attack' message to server
     	socket.emit('attack', {
 			'addresses': addresses
 		});
 		console.log("Looks like its sent, bud");
     };
 
+    // stops the attack
     $scope.stop = function() {
 		socket.emit('stop', {});
 		console.log("Stopping attack");
