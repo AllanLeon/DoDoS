@@ -3,10 +3,12 @@ var app = express();
 var request = require("request");
 app.use(express.static(__dirname + '/'));
 
+// Prints message when a POST request is received
 app.post("/", function(req, res) {
 	console.log("HELP!");
 });
 
+// Prints message when a GET request is received
 app.get("/", function(req, res) {
 	console.log("HELP!");
 });
