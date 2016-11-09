@@ -5,7 +5,7 @@ app.controller('MainController', function($scope, socket) {
 	$scope.devices = []; // array of all iot-devices
 	$scope.sendTime = sendTime; // function to send time to device
 
-  	// default options for an chart.js
+  	// default options for a chart.js
   	$scope.chartOptions = {
   		animation: false,
   		responsive: true,

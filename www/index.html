@@ -73,9 +73,6 @@
 <section ng-controller="MainController">
 	<div ng-repeat="device in devices" class="device-info">
  		<h2>{{ device.ID }}</h2>
- 		<!--<p>{{ device.data }}</p>-->
- 		<!--<input type="text" ng-model="device.timeToWait"></input>
- 		<button ng-click="sendTime(device.ID, device.timeToWait)">Ok</button>-->
  		<div><canvas id="line" class="chart chart-line" chart-data="device.data" chart-labels="device.labels" chart-series="device.series" chart-dataset-override="device.datasetOverride" chart-options="chartOptions"></canvas></div>
  	</div>
 </section>

