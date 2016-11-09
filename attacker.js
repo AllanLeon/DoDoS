@@ -50,16 +50,6 @@ function sendSensorData() {
 	});
 }
 
-function sendPortToMaster() {
-	request.post({
-	  headers: {"content-type" : "application/json"},
-	  url:     serverAddress + "/attacker",
-	  body:    JSON.stringify({"port": port, "id": id})
-	}, function(error, res, body){
-	  setInterval(sendSensorData, 1000);
-	});	
-}
-
 function sendLeaderToAll(leader) {
 	sendLeaderTo(leader, serverAddress);
 	for (var key in attackersData) {
@@ -155,15 +145,15 @@ app.post("/election", function(req, res) {
 	sendElectionToAll();
 });
 
+app.post("/coordinator", function(req, res) {
+	console.log("The leader is: " + req.body.leader);
+	res.sendStatus(200);
+});
+
 app.post("/victim", function(req, res) {
 	console.log("attacking...");
 	console.log(req.body.victim);
 	attackingInterval = setInterval(function () {attackVictim(req.body.victim)}, 10);
-	res.sendStatus(200);
-});
-
-app.post("/coordinator", function(req, res) {
-	console.log("The leader is: " + req.body.leader);
 	res.sendStatus(200);
 });
 
@@ -185,6 +175,16 @@ function attackVictim(victim) {
 //Starts this attacker. Default Port would be 8081, else +1
 var port = 8081;
 var attackersData = {};
+
+function sendPortToMaster() {
+	request.post({
+	  headers: {"content-type" : "application/json"},
+	  url:     serverAddress + "/attacker",
+	  body:    JSON.stringify({"port": port, "id": id})
+	}, function(error, res, body){
+	  setInterval(sendSensorData, 1000);
+	});	
+}
 
 function connect(p) {
 	app.listen(p, function() {
