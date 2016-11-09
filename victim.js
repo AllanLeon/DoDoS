@@ -12,6 +12,6 @@ app.get("/", function(req, res) {
 });
 
 //Starts this victim, default port is 3000
-var port = 3001;
+var port = parseInt(process.argv.slice(2)) || 3000;
 app.listen(port);
 console.log("Victim running on: " + port);

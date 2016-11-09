@@ -8,7 +8,7 @@ app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 var serverAddress = "http://127.0.0.1:8080";
-var id = process.argv.slice(2);//"My IoT";
+var id = process.argv.slice(2) || "My IoT";
 var leader = true;
 var receivedAll = 0;
 var electionSent = 0;
