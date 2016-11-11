@@ -24,7 +24,7 @@ app.put("/election", function(req, res) {
 });
 
 // Callback function when a HTTP POST method is requested, in the path '/election'
-// Broadcast the election message to all,
+// Broadcast the election message to all
 app.post("/election", function(req, res) {
 	console.log("starting election...");
 	sendElectionToAll();

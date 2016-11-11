@@ -67,8 +67,8 @@
 	</div>
 
 	<p><button ng-click="remove()">Remove marked</button></p>
-	<p><button ng-click="attack()">ATTACK!</button></p>
-	<p><button ng-click="stop()">Stop</button></p>
+	<p><button ng-click="attack()" ng-hide="isAttacking">ATTACK!</button></p>
+	<p><button ng-click="stop()" ng-show="isAttacking">Stop</button></p>
 </section>
 <section ng-controller="MainController">
 	<div ng-repeat="device in devices" class="device-info">

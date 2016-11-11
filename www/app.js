@@ -116,6 +116,7 @@ app.controller('MainController', function($scope, socket) {
 
 // Controller of addresses list to attack
 app.controller('AttackAddressesCtrl', function($scope, socket) {
+    $scope.isAttacking = false;
     $scope.addrList = []; // ip address + port list
    	//var addresses = [];
    	//var ports = [];
@@ -158,12 +159,14 @@ app.controller('AttackAddressesCtrl', function($scope, socket) {
 			'addresses': addresses
 		});
 		console.log("Looks like its sent, bud");
+    $scope.isAttacking = true;
     };
 
     // stops the attack
     $scope.stop = function() {
 		socket.emit('stop', {});
 		console.log("Stopping attack");
+    $scope.isAttacking = false;
     };
 });
 
